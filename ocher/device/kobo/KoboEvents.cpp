@@ -5,15 +5,12 @@
 
 #include "ocher/device/kobo/KoboEvents.h"
 #include "ocher/util/Debug.h"
-#include "ocher/util/Logger.h"
 
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/input.h>
 #include <string.h>
 #include <unistd.h>
-
-#define LOG_NAME "ocher.dev.kobo"
 
 
 /*
@@ -94,7 +91,6 @@ void KoboEvents::pollButton()
         } else if (r == sizeof(kbe)) {
             bool fire = true;
             OcherKeyEvent evt;
-            Log::debug(LOG_NAME, "button type %x", kbe.button);
             if (kbe.button == 0x66) {
                 evt.subtype = kbe.press ? OEVT_KEY_DOWN : OEVT_KEY_UP;
                 evt.key = OEVTK_HOME;
@@ -130,13 +126,10 @@ void KoboEvents::pollTouch()
     } while (r == -1 && errno == EINTR);
 
     unsigned int n = r / sizeof(struct input_event);
-    Log::debug(LOG_NAME, "read %u events", n);
 
     // http://www.kernel.org/doc/Documentation/input/event-codes.txt
     int syn = 0;
     for (unsigned int i = 0; i < n; ++i) {
-        Log::debug(LOG_NAME, "type %d code %d value %d", kevt[i].type, kevt[i].code,
-                kevt[i].value);
         if (kevt[i].type == EV_SYN) {
             syn = 1;
         } else if (kevt[i].type == EV_ABS) {
@@ -163,8 +156,6 @@ void KoboEvents::pollTouch()
                 m_evt.y = m_evt.x;
             }
 #endif
-            Log::info(LOG_NAME, "mouse %u, %u %s", m_evt.x, m_evt.y,
-                    m_evt.subtype == OEVT_MOUSE1_DOWN ? "down" : "up");
             m_loop->emitEvent(&m_evt);
         }
     }

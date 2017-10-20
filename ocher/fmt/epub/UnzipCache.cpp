@@ -5,12 +5,9 @@
 
 #include "ocher/fmt/epub/UnzipCache.h"
 #include "ocher/util/Buffer.h"
-#include "ocher/util/Logger.h"
 #include "ocher/util/Path.h"
 
 #include <fnmatch.h>
-
-#define LOG_NAME "ocher.epub.unzip"
 
 
 UnzipCache::UnzipCache(const char *filename, const char *password) :
@@ -69,7 +66,6 @@ int UnzipCache::unzipFile(const char *pattern, std::string *matchedName)
 
     err = unzGetCurrentFileInfo64(m_uf, &file_info, pathname, sizeof(pathname), NULL, 0, NULL, 0);
     if (err != UNZ_OK) {
-        Log::error(LOG_NAME, "unzGetCurrentFileInfo: %d", err);
         return -1;
     }
 
@@ -80,14 +76,11 @@ int UnzipCache::unzipFile(const char *pattern, std::string *matchedName)
             match = 2;
         int r = fnmatch(pattern, pathname, FNM_NOESCAPE /*| FNM_CASEFOLD*/);
         if (r == 0) {
-            Log::trace(LOG_NAME, "matched %s to %s", pathname, pattern);
             if (matchedName)
                 matchedName->assign(pathname);
         } else if (r == FNM_NOMATCH) {
-            // Log::trace(LOG_NAME, "did not match %s to %s", pathname, pattern);
             return 0;
         } else {
-            Log::error(LOG_NAME, "fnmatch: %s: error", pattern);
             return -1;
         }
     }
@@ -108,7 +101,6 @@ int UnzipCache::unzipFile(const char *pattern, std::string *matchedName)
                 } else {
                     tfile = root->createFile(name, buffer);
                     filename = name;
-                    Log::trace(LOG_NAME, "Creating file %s", filename.c_str());
                 }
             }
             if (!*p)
@@ -124,14 +116,11 @@ int UnzipCache::unzipFile(const char *pattern, std::string *matchedName)
 
         err = unzOpenCurrentFilePassword(m_uf, m_password.empty() ? NULL : m_password.c_str());
         if (err != UNZ_OK) {
-            Log::error(LOG_NAME, "unzOpenCurrentFilePassword: %d", err);
         } else {
-            Log::trace(LOG_NAME, "extracting: %s", pathname);
-
             do {
                 err = unzReadCurrentFile(m_uf, buf, buffer.size());
                 if (err < 0) {
-                    Log::error(LOG_NAME, "unzReadCurrentFile: %d", err);
+                    // TODO
                 }
             } while (err > 0);
         }
@@ -141,7 +130,7 @@ int UnzipCache::unzipFile(const char *pattern, std::string *matchedName)
         if (err == UNZ_OK) {
             err = unzCloseCurrentFile(m_uf);
             if (err != UNZ_OK) {
-                Log::error(LOG_NAME, "unzCloseCurrentFile: %d", err);
+                // TODO
             }
         } else
             unzCloseCurrentFile(m_uf);    /* don't lose the error */
@@ -161,7 +150,6 @@ int UnzipCache::unzip(const char *pattern, std::list<std::string> *matchedNames)
     m_uf = unzOpen64(m_filename.c_str());
     int err = unzGetGlobalInfo64(m_uf, &gi);
     if (err != UNZ_OK) {
-        Log::error(LOG_NAME, "unzGetGlobalInfo: %d", err);
         return -1;
     }
 
@@ -184,7 +172,6 @@ int UnzipCache::unzip(const char *pattern, std::list<std::string> *matchedNames)
         if ((i + 1) < gi.number_entry) {
             err = unzGoToNextFile(m_uf);
             if (err != UNZ_OK) {
-                Log::error(LOG_NAME, "unzGoToNextFile: %d", err);
                 return -1;
             }
         }

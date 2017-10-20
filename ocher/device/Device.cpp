@@ -5,7 +5,6 @@
 
 #include "ocher/device/Device.h"
 #include "ocher/ocher.h"
-#include "ocher/util/Logger.h"
 #include "ocher/util/StrUtil.h"
 
 #include <errno.h>
@@ -14,8 +13,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#define LOG_NAME "ocher.dev"
 
 
 std::string Device::getMac()
@@ -61,9 +58,7 @@ void Device::sleep()
 // "echo 1 > /sys/power/state-extended"
     const char *pwr = "/sys/power/state";
     int fd = open(pwr, O_WRONLY);
-    if (fd == -1) {
-        Log::error(LOG_NAME, "%s: %s", pwr, strerror(errno));
-    } else {
+    if (fd >= 0) {
         write(fd, "mem", 3);
         close(fd);
         ::sleep(1);  // TODO seems hackish, but don't want to return before enters sleep state

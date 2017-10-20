@@ -4,7 +4,6 @@
  */
 
 #include "ocher/device/Battery.h"
-#include "ocher/util/Logger.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -12,7 +11,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#define LOG_NAME "ocher.dev.battery"
 #define BAT_PATH "/sys/devices/platform/pmic_battery.1/power_supply/mc13892_bat/"
 
 
@@ -38,15 +36,12 @@ int Battery::readCapacity()
 
 #ifdef OCHER_TARGET_KOBO
     int fd = open(BAT_PATH "capacity", O_RDONLY);
-    if (fd < 0) {
-        Log::error(LOG_NAME, "Failed to read battery capacity: %s", strerror(errno));
-    } else {
+    if (fd >= 0) {
         char buf[8];
         r = read(fd, buf, sizeof(buf) - 1);
         if (r > 0) {
             buf[r] = 0;
             m_percent = atoi(buf);
-            Log::info(LOG_NAME, "Battery is %u%%", m_percent);
             r = 0;
         }
         close(fd);

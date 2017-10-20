@@ -6,43 +6,25 @@
 #include "ocher/device/Device.h"
 #include "ocher/settings/Settings.h"
 #include "ocher/ux/PowerSaver.h"
-#include "ocher/ux/fb/FontEngine.h"
-#include "ocher/util/Logger.h"
 
-#include <ev.h>
+#include <QtGlobal>
 
-#define LOG_NAME "ocher.ux.power"
-
-
-ev_timer timeout_watcher;
-
-void PowerSaver::timeoutCb(EV_P_ ev_timer *timer, int revents)
-{
-    Log::debug(LOG_NAME, "timeout");
-
-    static_cast<PowerSaver *>(timer->data)->timeout();
-}
 
 void PowerSaver::timeout()
 {
-    wantToSleep();
+    emit wantToSleep();
 }
 
 PowerSaver::PowerSaver() :
-    m_loop(0),
     m_seconds(15 * 60),
     // TODO settings
     m_device(0)
 {
-}
-
-void PowerSaver::inject(EventLoop *loop)
-{
-    m_loop = loop;
-
-    m_loop->emitEvent.Connect(this, &PowerSaver::dispatchEvent);
-
-    resetTimeout();
+#if QT_VERSION >= 0x050000
+    // Potentially more power efficient to not needlessly use fine-grained timer.
+    m_timer.setTimerType(Qt::VeryCoarseTimer);
+#endif
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(timeout()));
 }
 
 void PowerSaver::inject(Device *device)
@@ -58,24 +40,22 @@ void PowerSaver::setTimeout(unsigned int seconds)
 
 void PowerSaver::resetTimeout()
 {
-    ev_timer_init(&m_timer, timeoutCb, m_seconds, 0.);
-    ev_timer_start(m_loop->evLoop, &m_timer);
-    m_timer.data = this;
+    m_timer.start(m_seconds * 1000);
 }
 
-void PowerSaver::dispatchEvent(const struct OcherEvent *evt)
-{
-    if (evt->type == OEVT_MOUSE) {
-        resetTimeout();
-    } else if (evt->type == OEVT_KEY) {
-        if (evt->key.key == OEVTK_POWER && evt->key.subtype == OEVT_KEY_UP)
-            timeout();
-        else
-            resetTimeout();
-    }
-}
-
-void PowerSaver::sleep()
-{
-    m_device->sleep();
-}
+//void PowerSaver::dispatchEvent(const struct OcherEvent *evt)
+//{
+//    if (evt->type == OEVT_MOUSE) {
+//        resetTimeout();
+//    } else if (evt->type == OEVT_KEY) {
+//        if (evt->key.key == OEVTK_POWER && evt->key.subtype == OEVT_KEY_UP)
+//            timeout();
+//        else
+//            resetTimeout();
+//    }
+//}
+//
+//void PowerSaver::sleep()
+//{
+//    m_device->sleep();
+//}

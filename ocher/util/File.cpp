@@ -1,6 +1,5 @@
 #include "util/Buffer.h"
 #include "util/File.h"
-#include "util/Random.h"
 
 #include <assert.h>
 #include <errno.h>
@@ -76,7 +75,6 @@ int File::init(const char *mode)
     int state = 0;  // Trivial FSM: 0=r,w,a 1=+ 2=x,u,t
     int mi = 0;
     char c;
-    bool uniq = false;
 
     while ((c = mode[mi++])) {
         switch (state) {
@@ -110,9 +108,6 @@ int File::init(const char *mode)
                 ;
             } else if (c == 'x') {
                 oflag |= O_EXCL;
-            } else if (c == 'u') {
-                oflag |= O_EXCL;
-                uniq = true;
             } else if (c == 't') {
                 m_temp = true;
             } else {
@@ -125,31 +120,7 @@ int File::init(const char *mode)
         }
     }
     int fd;
-    if (uniq) {
-        Random rnd;
-        m_filename.append(".XXXXXX");
-        const unsigned int len = m_filename.length();
-        while (1) {
-            do {
-                for (unsigned int i = 0; i < 6; ++i) {
-                    char l = rnd.nextInt(10 + 26 + 26);
-                    if (l >= 10 + 26)
-                        l += ('a' - 10 - 26);
-                    else if (l >= 10)
-                        l += ('A' - 10);
-                    else
-                        l += '0';
-                    m_filename[len - 1 - i] = l;
-                }
-            } while (access(m_filename.c_str(), F_OK));
-            fd = open(m_filename.c_str(), oflag, omode);
-            if (fd < 0 && errno == EEXIST)
-                continue;
-            break;
-        }
-    } else {
-        fd = open(m_filename.c_str(), oflag, omode);
-    }
+    fd = open(m_filename.c_str(), oflag, omode);
     if (fd == -1) {
         return errno;
     }

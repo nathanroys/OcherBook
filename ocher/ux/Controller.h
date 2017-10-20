@@ -8,12 +8,12 @@
 
 #include "ocher/shelf/Shelf.h"
 #include "ocher/ux/Activity.h"
+#include "ocher/ux/MainWindow.h"
+
+#include <QObject>
 
 class Device;
-class EventLoop;
 class Filesystem;
-class FontEngine;
-class FrameBuffer;
 class Options;
 class PowerSaver;
 class Renderer;
@@ -42,25 +42,15 @@ public:
  *
  * Derive from UxController (perhaps) per toolkit.
  */
-class UxController {
+class UxController : public QObject
+{
+    Q_OBJECT
+
 public:
     UxController();
     virtual ~UxController();
 
-    virtual const char *getName() const = 0;
-
     virtual bool init() = 0;
-
-    virtual FrameBuffer *getFrameBuffer()
-    {
-        return (FrameBuffer *)0;
-    }
-
-    virtual FontEngine *getFontEngine()
-    {
-        return (FontEngine *)0;
-    }
-    virtual Renderer *getRenderer() = 0;
 
     // TODO: in general, need more control (when running a new activity, is the prior
     // one destroyed?  or suspended?
@@ -68,14 +58,13 @@ public:
 
     void onWantToSleep();
     void onDirChanged(const char *dir, const char *file);
-    void handleEvent(const struct OcherEvent *evt);
 
     ReadingContext ctx;
 
 protected:
     Filesystem *m_filesystem;
     PowerSaver *m_powerSaver;
-    EventLoop *m_loop;
+    MainWindow *m_mainWindow;
 };
 
 /**
@@ -91,7 +80,6 @@ public:
 
 protected:
     void initCrash();
-    void initLog();
     void initDebug();
 
     UxController *m_uxController;

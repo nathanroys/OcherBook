@@ -1,4 +1,7 @@
 # TODO
+# modern cmake
+# git submodules
+# clang-format
 # features requires/conflicts
 # 3rd party external builds
 # help
@@ -57,14 +60,11 @@ if(NOT CMAKE_CROSSCOMPILING)
 enable_testing()
 endif()
 
+find_package(Qt4 REQUIRED)
+
+include(${QT_USE_FILE})
+add_definitions(${QT_DEFINITIONS})
+
 add_subdirectory(third-party/mxml)
 add_subdirectory(third-party/zlib)
-add_subdirectory(third-party/Signals)
-add_subdirectory(third-party/libev)
-add_subdirectory(third-party/freetype)
-#add_subdirectory(third-party/libwapcaplet)
-#add_subdirectory(third-party/libparserutils)
-#add_subdirectory(third-party/libcss)
-#add_subdirectory(third-party/libhubbub)
-
 add_subdirectory(ocher)

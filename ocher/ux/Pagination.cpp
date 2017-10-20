@@ -5,9 +5,6 @@
 
 #include "ocher/ux/Pagination.h"
 #include "ocher/util/Debug.h"
-#include "ocher/util/Logger.h"
-
-#define LOG_NAME "ocher.pagination"
 
 
 Pagination::Pagination() :
@@ -45,14 +42,11 @@ void Pagination::set(unsigned int pageNum, unsigned int layoutOffset, unsigned i
         mapping->strOffset = strOffset;
         if (m_numPages <= pageNum)
             m_numPages = pageNum + 1;
-        Log::debug(LOG_NAME, "set page %u breaks at layoutOffset %u strOffset %u", pageNum, layoutOffset, strOffset);
     }
 }
 
 bool Pagination::get(unsigned int pageNum, unsigned int *layoutOffset, unsigned int *strOffset /* TODO attrs */)
 {
-    Log::debug(LOG_NAME, "get page %u", pageNum);
-
     if (pageNum > m_numPages)
         return false;
     unsigned int chunk = pageNum / pagesPerChunk;
@@ -63,6 +57,5 @@ bool Pagination::get(unsigned int pageNum, unsigned int *layoutOffset, unsigned 
     mapping += pageNum % pagesPerChunk;
     *layoutOffset = mapping->layoutOffset;
     *strOffset = mapping->strOffset;
-    Log::debug(LOG_NAME, "found page %u breaks at layoutOffset %u strOffset %u", pageNum, *layoutOffset, *strOffset);
     return true;
 }

@@ -8,13 +8,8 @@
 #include "ocher/fmt/epub/LayoutEpub.h"
 #include "ocher/fmt/epub/TreeMem.h"
 #include "ocher/settings/Settings.h"
-#include "ocher/util/Logger.h"
 
-// #include "hubbub/hubbub.h"
-// #include "libcss/libcss.h"
 #include "mxml.h"
-
-#define LOG_NAME "ocher.epub"
 
 
 void LayoutEpub::processNode(mxml_node_t *node)
@@ -23,7 +18,6 @@ void LayoutEpub::processNode(mxml_node_t *node)
 
     if (node->type == MXML_ELEMENT) {
         const char *name = node->value.element.name;
-        Log::trace(LOG_NAME, "found element '%s'", name);
         if (strcasecmp(name, "div") == 0) {
             processSiblings(node->child);
         } else if (strcasecmp(name, "title") == 0) {
@@ -81,7 +75,6 @@ void LayoutEpub::processNode(mxml_node_t *node)
             processSiblings(node->child);
         }
     } else if (node->type == MXML_OPAQUE) {
-        Log::trace(LOG_NAME, "found opaque");
         for (char *p = node->value.opaque; *p; ++p) {
             outputChar(*p);
         }
@@ -106,8 +99,6 @@ void LayoutEpub::append(mxml_node_t *tree)
         // mxmlFindPath returns the first child node.  Ok, so processSiblings.
         processSiblings(body);
         outputPageBreak();
-    } else {
-        Log::warn(LOG_NAME, "no body");
     }
 }
 #else
@@ -118,8 +109,6 @@ void LayoutEpub::append(std::string &html)
     if (tree) {
         ((LayoutEpub *)m_layout)->append(tree);
         mxmlDelete(tree);
-    } else {
-        Log::warn(LOG_NAME, "No tree found for spine item %d", i);
     }
 }
 #endif

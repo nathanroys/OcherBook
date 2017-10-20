@@ -6,9 +6,6 @@
 #include "ocher/shelf/Meta.h"
 #include "ocher/shelf/Shelf.h"
 #include "ocher/util/Debug.h"
-#include "ocher/util/Logger.h"
-
-#define LOG_NAME "ocher.shelf"
 
 
 void GroupOfBooks::attach(GroupOfBooks *observer)

@@ -4,11 +4,6 @@
  */
 
 #include "ocher/ux/Event.h"
-#include "ocher/util/Logger.h"
-
-#include <ev.h>
-
-#define LOG_NAME "ocher.evt"
 
 using namespace std;
 
@@ -27,9 +22,7 @@ EventLoop::~EventLoop()
 
 int EventLoop::run()
 {
-    Log::debug(LOG_NAME, "ev_run");
     ev_run(evLoop, 0);
-    Log::debug(LOG_NAME, "ev_run done");
 
     return 0;
 }
@@ -41,7 +34,6 @@ void EventLoop::stop()
 
 void EventLoop::setEpoch()
 {
-    /* TODO m_epoch = SDL_GetTick() */
 }
 
 void EventLoop::injectEvent(const struct OcherEvent &event)

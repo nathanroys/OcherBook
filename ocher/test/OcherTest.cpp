@@ -13,7 +13,6 @@
 #include "ocher/fmt/epub/TreeMem.h"
 #include "ocher/settings/Options.h"
 #include "ocher/util/Buffer.h"
-#include "ocher/util/LogAppenders.h"
 #include "ocher/util/Path.h"
 #include "ocher/ux/PowerSaver.h"
 

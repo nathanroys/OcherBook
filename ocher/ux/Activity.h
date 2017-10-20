@@ -6,6 +6,8 @@
 #ifndef OCHER_UX_ACTIVITY_H
 #define OCHER_UX_ACTIVITY_H
 
+#include <QWidget>
+
 
 enum ActivityType {
     ACTIVITY_BOOT,
@@ -23,7 +25,10 @@ enum ActivityType {
 
 /** A logical portion of user interaction.
  */
-class Activity {
+class Activity : public QWidget
+{
+    Q_OBJECT
+
 public:
     virtual void onAttached() = 0;
     virtual void onDetached() = 0;

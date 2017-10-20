@@ -28,16 +28,10 @@ void usage(const char *msg)
             // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
             "Usage:  ocher [OPTIONS]... [FILE]...\n"
             "\n"
-            "-b,--boot              Present boot menu; nonzero exit means run other firmware.\n"
-            "-f,--flatten           Flatten (do not show to user) the directory heirarchy.\n"
-            "-t,--test              Test (validate) the epubs rather than view.\n"
-            "-h,--help              Help.\n"
+            "-h,--help              This help.\n"
             "-v,--verbose           Increase logging verbosity.\n"
             "-q,--quiet             Quiet; decrease logging verbosity.\n"
             "   --key <key>=<value> Set the global <key> to <value>\n"
-            "   --list-drivers      List all available output drivers.  Each driver consists of\n"
-            "                       a font renderer driving a hardware device.\n"
-            "   --driver <driver>   Use a specific driver.\n"
             "\n"
             "Multiple files and/or directories may be specified, and will override any\n"
             "platform specific search paths.  Directories will be searched recursively.\n"
@@ -47,25 +41,17 @@ void usage(const char *msg)
 }
 
 #define OPT_KEY 256
-#define OPT_DRIVER 257
-#define OPT_LIST_DRIVERS 258
 
 int main(int argc, char **argv)
 {
-    bool listDrivers = false;
     Options *opt = new Options;
 
     struct option long_options[] =
     {
-        { "boot",         no_argument,       0, 'b' },
-        { "flatten",      no_argument,       0, 'f' },
         { "help",         no_argument,       0, 'h' },
         { "quiet",        no_argument,       0, 'q' },
-        { "test",         no_argument,       0, 't' },
         { "verbose",      no_argument,       0, 'v' },
         { "key",          required_argument, 0, OPT_KEY },
-        { "driver",       required_argument, 0, OPT_DRIVER },
-        { "list-drivers", no_argument,       0, OPT_LIST_DRIVERS },
         { 0, 0, 0, 0 }
     };
 
@@ -78,9 +64,6 @@ int main(int argc, char **argv)
             break;
         switch (ch) {
         case 0:
-            break;
-        case 'b':
-            opt->bootMenu = true;
             break;
         case 'v':
             opt->verbose++;
@@ -102,12 +85,6 @@ int main(int argc, char **argv)
             }
             break;
         }
-        case OPT_DRIVER:
-            opt->driverName = optarg;
-            break;
-        case OPT_LIST_DRIVERS:
-            listDrivers = true;
-            break;
         default:
             usage("Unknown argument");
             break;
@@ -120,14 +97,6 @@ int main(int argc, char **argv)
 
     try {
         Controller c(opt);
-
-        if (listDrivers) {
-            for (unsigned int i = 0; i < g_container.uxControllers.size(); ++i) {
-                UxController *controller = g_container.uxControllers[i];
-                printf("\t%s\n", controller->getName());
-            }
-            return 0;
-        }
 
         c.run();
     } catch (std::exception &e) {

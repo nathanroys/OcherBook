@@ -6,17 +6,9 @@
 #ifndef OCHER_EVENT_H
 #define OCHER_EVENT_H
 
-#include "ocher/util/Thread.h"
-
-#include "Signals/Signal.h"
-#include <ev.h>
-
 #include <mutex>
 #include <stdint.h>
 #include <vector>
-
-using namespace Gallant;
-
 
 
 #define OEVT_KEYPRESS           0

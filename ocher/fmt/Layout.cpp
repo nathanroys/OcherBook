@@ -5,7 +5,6 @@
 
 #include "ocher/fmt/Layout.h"
 #include "ocher/util/Debug.h"
-#include "ocher/util/Logger.h"
 
 #include <ctype.h>
 

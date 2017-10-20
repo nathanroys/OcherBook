@@ -6,10 +6,7 @@
 #ifndef OCHER_FILESYSTEM_H
 #define OCHER_FILESYSTEM_H
 
-#include "ocher/util/Thread.h"
-
-#include "Signals/Signal.h"
-using namespace Gallant;
+#include <QObject>
 
 class Options;
 
@@ -18,7 +15,10 @@ class Options;
  *
  * On some platforms, notifies when the books change.
  */
-class Filesystem {
+class Filesystem : public QObject
+{
+    Q_OBJECT
+
 public:
     Filesystem();
     ~Filesystem();
@@ -33,7 +33,9 @@ public:
     void initWatches(Options *options);
     void deinitWatches();
     void fireEvents();
-    Signal2<const char *, const char *> dirChanged;
+
+signals:
+    void dirChanged(const char *, const char *);
 
 protected:
     int m_infd;

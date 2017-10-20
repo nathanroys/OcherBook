@@ -7,7 +7,6 @@
 #include "ocher/device/Filesystem.h"
 #include "ocher/settings/Options.h"
 #include "ocher/util/File.h"
-#include "ocher/util/Logger.h"
 #include "ocher/util/Path.h"
 
 #include <stdlib.h>
@@ -19,8 +18,6 @@
 #ifdef __linux__
 #include <sys/inotify.h>
 #endif
-
-#define LOG_NAME "ocher.dev.fs"
 
 #ifndef OCHER_TARGET_KOBO
 static std::string settingsDir()
@@ -88,7 +85,7 @@ void Filesystem::initWatches(Options *options)
 #ifdef __linux__
     m_infd = inotify_init();
     if (m_infd == -1) {
-        Log::error(LOG_NAME, "inotify_init: %s", strerror(errno));
+        //Log::error(LOG_NAME, "inotify_init: %s", strerror(errno));
         return;
     }
 
@@ -100,7 +97,7 @@ void Filesystem::initWatches(Options *options)
             break;
         int wd = inotify_add_watch(m_infd, lib, IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO);
         if (wd == -1) {
-            Log::error(LOG_NAME, "inotify_add_watch(\"%s\"): %s", lib, strerror(errno));
+            //Log::error(LOG_NAME, "inotify_add_watch(\"%s\"): %s", lib, strerror(errno));
         }
     }
 #endif
@@ -158,7 +155,7 @@ void Filesystem::fireEvents()
            if (pevent->len) printf ("name=%s\n", pevent->name);
          */
 
-        dirChanged(pevent->name, "");
+        emit dirChanged(pevent->name, "");
 
         i += sizeof(struct inotify_event) + pevent->len;
     }

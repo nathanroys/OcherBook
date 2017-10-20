@@ -15,8 +15,6 @@ class Options {
 public:
     Options() :
         verbose(0),
-        bootMenu(false),
-        driverName(0),
         files(0),
         watches(0),
         inFd(0),
@@ -25,12 +23,6 @@ public:
     }
 
     int verbose;
-
-    /** Start at boot menu?
-     */
-    bool bootMenu;
-
-    const char *driverName;
 
     /** Files and/or directories passed on the command line, to be synced once.
      */

@@ -6,42 +6,40 @@
 #ifndef OCHER_DEV_POWER_SAVER_H
 #define OCHER_DEV_POWER_SAVER_H
 
-#include "ocher/ux/Event.h"
-
-#include "Signals/Signal.h"
-using namespace Gallant;
+#include <QObject>
+#include <QTimer>
 
 class Device;
 
 
-class PowerSaver {
+class PowerSaver : public QObject
+{
+    Q_OBJECT
+
 public:
     PowerSaver();
 
-    void inject(EventLoop *loop);
     void inject(Device *device);
 
     void setTimeout(unsigned int seconds);
 
-    Signal0<> wantToSleep;
-
-    void sleep();
+//    void sleep();
 
     void onAttached();
     void onDetached();
 
+signals:
+    void wantToSleep();
+public slots:
+    void timeout();
+
 protected:
     void resetTimeout();
 
-    static void timeoutCb(EV_P_ ev_timer *w, int revents);
-    void timeout();
+//    void dispatchEvent(const struct OcherEvent *evt);
 
-    void dispatchEvent(const struct OcherEvent *evt);
-
-    EventLoop *m_loop;
-    ev_timer m_timer;
+    QTimer m_timer;
     unsigned int m_seconds;
-
     Device *m_device;
 };
 
