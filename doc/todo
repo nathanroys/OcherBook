@@ -1,0 +1,74 @@
++ Rename Meta to EBook
++ Move meta.* to ebook.*
++ Format is interface; remove data members.
++ Refactored layout generation; EBook now owns result
+
+test building
+    various OSs
+    various libraries [not] installed
+    AC_CHECK_LIB vs AC_CHECK_HEADER ?
+
+
+make CDK work
+    make controller less hardcoded
+        run:
+            how to pass relevant state to activities?
+            is this just a bunch of state on the controller?
+            so controller doesn't set stuff on renderer... etc...
+            in fact, CdkRender is only for CdkRead, not in CdkController
+
+            // TODO Pass a Layout object, not a raw buffer pointer
+            m_renderer->set(*selected->m_layout.get());
+        is there still a generic Activity?
+            so maybe onAttached / onDetached is okay...
+        call cdklibrary/fdlibrary
+keys for fd
+remove evtKey, OcherKeyEvent, OcherMouseEvent
+    - just code it natively
+    - lots of dead cdk code in fdread ??
+Lift navigation out of read class
+
+
+OCHER-1
+- Further refactor layout
+  - Layout::unlock returns a buffer;
+  - ~Layout deletes strings referenced by byte buffer
+  - ==> should be an object
+  - change what gets passed to render
+    maybe
+        - set the EBook on the render
+        - ebook holds a Layout object on the heap
+        - more smarts in layout (already laid out?)
+
+HTML elements
+    ul is unordered list, not underlined!
+    blockquote
+        left and right margins
+Fix TODOs in epub parsing
+CSS
+    decouple formatting
+
+Refactor ownership of EBooks on Shelf.  Lots of raw pointers.
+
+kill DirIter.  use std
+
+character encoding layer
+
+"make test"
+
+clang-tidy / modernize
+    modernize: fs::path
+    modernize: bare 'new' -> unique_ptr
+    modernize: enum class
+
+consistent XXX TODO
+
+#define BOOKS_PER_PAGE 11
+
+make CDK a configure option
+
+fix cdkread
+    start with cdkcontroller
+    drop the idea of "activity"
+    able to select cdk from main
+
